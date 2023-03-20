@@ -4,11 +4,19 @@ export interface User {
 
 export interface Pokemon {
   name: string;
+  id: number;
   base_experience: number;
   height: number;
   order: number;
   weight: number;
   sprites: {
-    default: string;
+    back_default: string;
   };
+  stats: {
+    base_stat: number;
+    stat: {
+      name: string;
+      url: string;
+    };
+  }[];
 }

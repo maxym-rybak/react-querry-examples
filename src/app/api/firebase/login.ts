@@ -1,6 +1,6 @@
 import { getDatabase, ref, get } from '@firebase/database';
 import { User } from '../entities';
-import firebaseApp from '../../../services/firebase';
+import firebaseApp from '../../../services/firebaseApp';
 
 export const login = async (user: User) => {
   const db = getDatabase(firebaseApp);

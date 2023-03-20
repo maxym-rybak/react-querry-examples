@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query';
-import { login } from '../app/api/user/login';
+import { login } from '../app/api/firebase/login';
 
 const POOL_TIME = 1000 * 60;
 
