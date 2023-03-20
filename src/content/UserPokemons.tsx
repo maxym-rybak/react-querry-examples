@@ -52,7 +52,7 @@ export const UserPokemons: React.FC<UserPokemonsProps> = ({ username }) => {
 
   return (
     <Box>
-      <Typography variant={'h3'} color="secondary.main" mb={2}>
+      <Typography variant={'h3'} color="secondary.main" mb={2} textTransform="capitalize">
         {`${username}'s Pokemons`}
       </Typography>
       <TableContainer component={Paper} sx={{ maxHeight: '800px' }}>

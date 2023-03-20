@@ -19,6 +19,7 @@ export default function Home() {
       <Card
         sx={{
           width: 450,
+          maxWidth: '100%',
           padding: 3,
           display: 'flex',
           flexDirection: 'column',
