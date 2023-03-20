@@ -17,7 +17,25 @@ export const palette = {
   },
 };
 
-export const themeOptions: ThemeOptions = { palette };
+export const themeOptions: ThemeOptions = {
+  palette,
+  components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          color: '#fff',
+        },
+      },
+    },
+    MuiTablePagination: {
+      styleOverrides: {
+        root: {
+          color: '#fff',
+        },
+      },
+    },
+  },
+};
 
 const theme = createTheme(themeOptions);
 

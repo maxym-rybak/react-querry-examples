@@ -3,6 +3,7 @@ import { Pokemon } from '../entities';
 
 interface GetPokemonsResponse {
   data: {
+    count: number;
     results: {
       name: string;
       url: string;
@@ -10,8 +11,8 @@ interface GetPokemonsResponse {
   };
 }
 
-export const getPokemons = (): Promise<GetPokemonsResponse> => {
-  return axios.get('https://pokeapi.co/api/v2/pokemon');
+export const getPokemons = (limit: number, offset: number): Promise<GetPokemonsResponse> => {
+  return axios.get(`https://pokeapi.co/api/v2/pokemon` + `?limit=${limit}&offset=${offset}`);
 };
 
 export const getPokemonDetailedInfoFromUrl = async (url: string): Promise<Pokemon> => {

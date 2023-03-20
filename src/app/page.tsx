@@ -1,8 +1,7 @@
 'use client';
 
-import { Button, Card, Container, TextField } from '@mui/material';
+import { Button, Card, Container, TextField, Typography } from '@mui/material';
 import { useState } from 'react';
-import { useLogin } from '../hooks/useLogin';
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
@@ -11,20 +10,31 @@ export default function Home() {
 
   const router = useRouter();
 
-  const { data: userData } = useLogin(loginName);
-
-  if (userData) {
-    router.push('/play');
+  if (loginName) {
+    router.push(`/trainer/${loginName}`);
   }
 
   return (
     <Container maxWidth={'xl'}>
       <Card
-        sx={{ width: 350, padding: 2, display: 'flex', flexDirection: 'column', gap: 2, margin: 'auto', marginTop: 2 }}
+        sx={{
+          width: 450,
+          padding: 3,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+          position: 'absolute' as const,
+          top: '30%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+        }}
       >
-        <TextField label={'Username'} value={name} onChange={e => setName(e.target.value)} />
+        <Typography variant="h6" color="#fff" fontWeight={700}>
+          {'Write your trainer name'}
+        </Typography>
+        <TextField label={'Trainer name'} value={name} onChange={e => setName(e.target.value)} />
         <Button variant={'contained'} onClick={() => setLoginName(name)}>
-          Enter
+          {'Enter'}
         </Button>
       </Card>
     </Container>

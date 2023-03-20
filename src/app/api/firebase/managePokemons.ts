@@ -9,11 +9,13 @@ export const addPokemon = (username: string, pokemon: Pokemon) => {
   return set(reference, pokemon);
 };
 
-export const removePokemon = (username: string, pokemon: Pokemon) => {
+export const removePokemon = async (username: string, pokemonName: string) => {
+  console.log('removePokemon', username, pokemonName);
   const db = getDatabase(firebaseApp);
-  const reference = ref(db, 'pokemons/' + `${username}/` + pokemon.name);
+  const reference = ref(db, 'pokemons/' + `${username}/` + pokemonName);
 
-  return remove(reference);
+  await remove(reference);
+  return pokemonName;
 };
 
 const pokemonsMapToArray = (pokeMap: Record<string, Pokemon>) => {

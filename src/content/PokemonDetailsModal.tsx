@@ -1,9 +1,10 @@
 import React from 'react';
 import { usePokemonDetailedInfo } from '../hooks/usePokemonDetailedInfo';
-import { Box, Button, Card, Modal, Skeleton, Typography } from '@mui/material';
+import { Box, Button, Card, Modal, Typography } from '@mui/material';
 import { useMutation, useQueryClient } from 'react-query';
 import { addPokemon } from '../app/api/firebase/managePokemons';
 import { Pokemon } from '../app/api/entities';
+import { UseMutationResult } from 'react-query/types/react/types';
 
 interface PokemonDetailsModalProps {
   username: string;
@@ -12,44 +13,49 @@ interface PokemonDetailsModalProps {
   setOpen: (value: boolean) => void;
 }
 
-const delay = (delayInms: number) => {
-  return new Promise(resolve => setTimeout(resolve, delayInms));
+const delay = (delayInMs: number) => {
+  return new Promise(resolve => setTimeout(resolve, delayInMs));
+};
+
+const randomBoolean = () => {
+  return Math.random() >= 0.5;
 };
 
 export const PokemonDetailsModal: React.FC<PokemonDetailsModalProps> = ({ url, open, setOpen, username }) => {
-  const { data, isLoading } = usePokemonDetailedInfo(url);
+  const { data } = usePokemonDetailedInfo(url);
 
   const queryClient = useQueryClient();
-  const catchPokemon = async () => {
+  const catchPokemon = async (): Promise<Pokemon> => {
     await delay(1000);
-    if (data) {
+    if (username && data && randomBoolean()) {
       await addPokemon(username, data);
       return data;
     } else {
-      throw new Error('No data');
+      throw new Error('Failed to catch!');
     }
   };
 
-  const mutation = useMutation(catchPokemon, {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-ignore
+  const mutation: UseMutationResult = useMutation(catchPokemon, {
     onSuccess: (pokemon: Pokemon) => {
       const oldData = queryClient.getQueryState(['userPokemons', username]);
       if (oldData && oldData.data) {
-        queryClient.setQueryData(['userPokemons', username], [...(oldData.data as Pokemon[]), pokemon]);
+        if (!(oldData.data as Pokemon[]).find(p => p.name === pokemon.name)) {
+          queryClient.setQueryData(['userPokemons', username], [...(oldData.data as Pokemon[]), pokemon]);
+        }
       } else {
         queryClient.setQueryData(['userPokemons', username], [pokemon]);
       }
       setOpen(false);
     },
-    onError: (error: Error) => {
-      console.error('Tut bedosya!!', error);
+    onError: () => {
+      setTimeout(() => mutation.reset(), 2000);
     },
   });
 
-  if (isLoading) {
-    return <Skeleton variant={'rectangular'} height={'200px'} />;
-  }
   return (
-    <Modal open={open} onClose={() => setOpen(false)}>
+    <Modal open={open} onClose={() => setOpen(false)} key={url}>
       <Card
         sx={{
           width: '300px',
@@ -77,7 +83,7 @@ export const PokemonDetailsModal: React.FC<PokemonDetailsModalProps> = ({ url, o
           <Box width={'100%'} color={'#fff'} textAlign={'left'}>
             {data &&
               data.stats.map(elem => (
-                <Box display={'flex'} justifyContent={'space-between'}>
+                <Box display={'flex'} justifyContent={'space-between'} key={elem.stat.name}>
                   <Typography textTransform="capitalize" fontWeight={700}>
                     {elem.stat.name}:
                   </Typography>
@@ -85,7 +91,16 @@ export const PokemonDetailsModal: React.FC<PokemonDetailsModalProps> = ({ url, o
                 </Box>
               ))}
           </Box>
-          <Button variant={'outlined'} fullWidth sx={{ marginTop: 2 }} onClick={() => mutation.mutate()}>
+          {Boolean(mutation.error) && (
+            <Typography color={'error'}>{`${(mutation.error as Error).message ?? 'Something went wrong'}`}</Typography>
+          )}
+          <Button
+            variant={'outlined'}
+            fullWidth
+            sx={{ marginTop: 2 }}
+            onClick={() => mutation.mutate(username)}
+            disabled={mutation.isLoading || mutation.isError}
+          >
             {!mutation.isLoading ? (
               <>
                 <img
